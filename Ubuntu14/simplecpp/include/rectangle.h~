@@ -1,0 +1,23 @@
+#ifndef _RECTANGTLE_INCLUDED_
+#define _RECTANGLE_INCLUDED_
+
+#include <sprite.h>
+#include <vector>
+
+class Rectangle : public Sprite{
+ private:
+  float width, height;
+  Position center;
+  Color fill_color;
+  bool fill;
+ public:
+  Rectangle(){};
+  void paint();
+  RectBox boundingBox();
+  Rectangle(double cx, double cy, double w, double h=-1, 
+	    bool fill=true, Color fill_clr = COLOR("Black"));
+  virtual void init(double cx, double cy, double w, double h=-1, 
+		    bool fill=true, Color fill_clr = COLOR("Black"));
+};
+
+#endif

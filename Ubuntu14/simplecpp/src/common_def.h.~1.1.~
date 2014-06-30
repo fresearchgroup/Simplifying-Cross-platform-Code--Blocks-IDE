@@ -1,0 +1,29 @@
+#ifndef _COMMON_DEF_INCLUDED_
+#define _COMMON_DEF_INCLUDED_
+
+class Position{
+  float x_dist, y_dist;
+ public:
+  Position(){
+    x_dist = y_dist = 0.0;
+  }
+  Position(float x, float y){
+    x_dist = x;
+    y_dist = y;
+  }
+  float GetXDistance(){
+    return x_dist;
+  }
+  float GetYDistance(){
+    return y_dist;
+  }
+};
+
+struct RectBox{
+  Position top_left;
+  Position bottom_right;
+};
+
+typedef unsigned long Color;
+
+#endif

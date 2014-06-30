@@ -1,0 +1,129 @@
+#include <queue>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <stdlib.h>
+#include <vector>
+#include <graphicsim.h>
+using namespace std;
+
+class taxiway;
+
+extern vector<taxiway*> mainPath;
+extern taxiway *rwCommon;
+extern vector<taxiway*> toGate;
+extern vector<taxiway*> fromGate;
+
+class simEntity{
+ public:
+  virtual void wakeup() = 0;
+};
+
+class simQueue {
+  float time;
+  priority_queue<pair<float,simEntity*>, vector<pair<float,simEntity*> >, 
+    greater<pair<float,simEntity*> > > pq;
+ public:
+  simQueue(){time=0;}
+  void insert(float dT, simEntity *pP){
+    pq.push(make_pair(time+dT,pP));
+  }
+  void process_till_empty(){
+    pair<float,simEntity*> sqe;
+    while(!pq.empty() && time < 1000){
+      sqe = pq.top();
+      time =sqe.first;
+      pq.pop();
+      sqe.second->wakeup();
+    }
+  }
+  ostream & log(){
+    cout << time << ") ";
+    return cout;
+  }
+};
+
+
+
+extern simQueue sq;
+
+class plane : public Polygon, public simEntity {
+public:
+  static const float pts_body[4][2];
+  int id;
+  int arrivalT;
+  int serviceT;
+  int segment;
+  int subsegment;
+  int timeToSegmentEnd;
+  int gate;
+  float stepsize;
+  void wakeup();
+  void init(){
+    setFillColor(COLOR("blue"));
+    setFill(true); 
+    penDown();
+  }
+  plane() : Polygon(0, 0, pts_body, 4){ init();};
+  plane(int i, int at, int st) : Polygon(pts_body, 4, Position(0,0), 0){
+    timeToSegmentEnd = 0;
+    id = i;
+    arrivalT = at;
+    segment = -1;   // currently before the runway.
+    subsegment = 0;
+    serviceT = st;
+    init();
+    //    hide();
+  };
+  bool turnoff(int segment);
+  void move_along_current_segment();
+  void process_detour_to_gate();
+  void process_entry_to_next_segment();
+  void enter(taxiway *ptw);
+};
+
+
+
+class resource : public queue<simEntity*>{
+public:
+  simEntity* owner;
+  resource(){owner = NULL;};
+  bool reserve(simEntity* pPlane){
+    if (owner ==NULL)
+      owner = pPlane;
+    return owner == pPlane;
+  }
+  void await(simEntity* pS){
+    push(pS);  // should be called only if reserve fails.
+  }
+  void release(){
+    if(!empty()){
+      owner = front();
+      pop();
+      owner->wakeup();
+    }
+    else owner = NULL;
+  }
+};
+
+class taxiway : public Line, public resource{
+public:
+  int id;
+  int delay;
+  taxiway();
+  taxiway(float xa, float ya, float xb, float yb, int trT,int i)
+    : Line(Position(xa,ya),Position(xb,yb)){
+    delay = trT;
+    id = i;
+  }
+};
+
+const int nGates=10;
+
+const int RW1X1=100, RW1Y1=100, RW1X2=900, RW1Y2=300;
+const int RW2X1=100, RW2Y1=300, RW2X2=900, RW2Y2=100;
+const int RWXm=500, RWYm=200;
+
+const int TWX1=950, TWY1=500, TWX2=50, TWY2=500;
+
+const int TWYT = 600;  // level of the terminals

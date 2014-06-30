@@ -1,0 +1,182 @@
+#include <line.h>
+#include <cmath>
+#include <canvas.h>
+
+#define PI 3.141596
+
+
+Line::Line():Sprite(){
+  line_color = COLOR("Black");
+  thickness = 0;
+  vertex[0] = Position(0, 0);
+  vertex[1] = Position(0, 0);
+  res_vertex[0] = Position(0, 0);
+  res_vertex[1] = Position(0, 0);
+}
+
+// Constructor
+// Use: Initialise values
+// Precondition: points is 2D array containing two rows. It has two columns which give x and y co-ordinates of each point.
+// Postcondition: Values initialised
+Line::Line(const float points[2][2], Position line_origin, float line_orientation)
+  :Sprite(line_origin, line_orientation, 1, 1){
+  line_color = COLOR("Black");
+  thickness = 0;
+  
+  vertex[0] = Position(points[0][0], points[0][1]);
+  vertex[1] = Position(points[1][0], points[1][1]);
+
+  // Fill res_vertex
+  compute_res_vertex();
+
+  paint();
+}
+
+// Constructor
+// Use: Initialise values
+// Precondition: points is array containing two elements.
+// Postcondition: Values initialised
+Line::Line(const Position points[2], Position line_origin, float line_orientation)
+ :Sprite(line_origin, line_orientation, 1, 1){
+
+  line_color = COLOR("Black");
+  thickness = 0.02;
+ 
+  vertex[0] = points[0];
+  vertex[1] = points[1];
+
+  // Fill res_vertex
+  compute_res_vertex();
+
+  paint();  
+}
+
+Line::Line(Position start, Position end, Position line_origin, float line_orientation)
+ :Sprite(line_origin, line_orientation, 1, 1){
+
+  line_color = COLOR("Black");
+  thickness = 0.02;
+ 
+  vertex[0] = start;
+  vertex[1] = end;
+
+  // Fill res_vertex
+  compute_res_vertex();
+
+  paint();  
+}
+// Use: Destructor
+// Precondition: None
+// Postcondition: None
+Line::~Line(){
+  // Do nothing
+}
+
+// Use: Draw polygon on screen
+// Precondition: Nothing
+// Postcondition: If visible is true, then draw on screen
+void Line::paint(){
+#ifdef DEBUG
+  //debug
+  RectBox rect = boundingBox();
+  //draw(rect.top_left, rect.bottom_right, White, true);
+#endif
+
+  if(visible){
+
+    // Find final co-ordinates
+    compute_res_vertex();
+
+    XPoint start, end;
+    start.x = (int) res_vertex[0].GetXDistance();
+    start.y = (int) res_vertex[0].GetYDistance();
+
+    end.x = (int) res_vertex[1].GetXDistance();
+    end.y = (int) res_vertex[1].GetYDistance();
+
+    drawLine(start, end, line_color, thickness);    
+  } 
+}
+
+
+// Use: Gives rectangle bounding polygon
+// Precondition: Nothing
+// Postcondition: RectBox contains bounding box
+RectBox Line::boundingBox(){
+  RectBox rect;
+
+  // Find final co-ordinates
+  compute_res_vertex();
+
+  // Find bounding box
+  float min_x, max_x;
+  float min_y, max_y;
+
+  min_x = max_x = res_vertex[0].GetXDistance();
+  min_y = max_y = res_vertex[0].GetYDistance();
+
+  for(int iter = 0; iter < 2; iter ++){
+    float curr_x = res_vertex[iter].GetXDistance();
+    float curr_y = res_vertex[iter].GetYDistance();
+
+    if(min_x > curr_x)
+      min_x = curr_x;
+    if(max_x < curr_x)
+      max_x = curr_x;
+    if(min_y > curr_y)
+      min_y = curr_y;
+    if(max_y < curr_y)
+      max_y = curr_y;
+  }
+
+  rect.top_left = Position(min_x - thickness, min_y - thickness);
+  rect.bottom_right = Position(max_x + thickness, max_y + thickness);
+
+  return rect;
+}
+
+// Use: Set line color
+// Precondition: None
+// Postcondition: line_color modified
+void Line::setLineColor(Color line_clr){
+  line_color = line_clr;
+  paint();
+}
+
+// Use: Get line color
+// Precondition: Nothing
+// Postcondition: line_color returned
+Color Line::getLineColor(){
+  return line_color;
+}
+
+// Use: Set thickness
+// Precondition: Thickness > 0
+// Postcondition: None
+void Line::setThickness(float value){
+  if(value > 0){
+    thickness = value;
+    paint();
+  }
+}
+
+// Use: Get line thickness
+// Precondition: Nothing
+// Postcondition: Read thickness
+float Line::getThickness(){
+  return thickness;
+}
+
+void Line::compute_res_vertex(){
+for(int iter = 0; iter < 2; iter ++){
+    float curr_x = vertex[iter].GetXDistance();
+    float curr_y = vertex[iter].GetYDistance();
+
+    res_vertex[iter] = Position(curr_x * xscale * cos(orientation*PI/180.0) - curr_y * yscale * sin(orientation*PI/180.0) + origin.GetXDistance(),
+				curr_x * xscale* sin(orientation*PI/180.0) + curr_y * yscale * cos(orientation*PI/180.0) + origin.GetYDistance());
+  }
+}
+
+Position* Line::getVertices(){
+  return res_vertex;
+}

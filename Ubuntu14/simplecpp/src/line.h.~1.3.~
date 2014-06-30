@@ -1,0 +1,32 @@
+#ifndef _LINE_INCLUDED_
+#define _LINE_INCLUDED_
+
+#include <common_def.h>
+#include <sprite.h>
+#include <vector>
+
+class Line : public Sprite{
+ private:
+  Position vertex[2];
+  Color line_color;
+  float thickness;
+  Position res_vertex[2];
+
+  void compute_res_vertex();
+
+ public:
+  Line();
+  Line(const float points[2][2], Position line_origin=Position(0, 0), float line_orientation=0);
+  Line(const Position points[2], Position line_origin=Position(0, 0), float line_orientation=0);
+  Line(Position start, Position end, Position line_origin=Position(0, 0), float line_orientation=0);
+  ~Line();
+
+  void paint();
+  RectBox boundingBox();
+  void setLineColor(Color line_clr);
+  Color getLineColor();
+  void setThickness(float value=0);
+  float getThickness();
+  Position* getVertices();
+};
+#endif

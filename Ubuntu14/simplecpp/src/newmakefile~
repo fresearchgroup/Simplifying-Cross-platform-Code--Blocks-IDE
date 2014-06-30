@@ -1,0 +1,51 @@
+default: canvas.o rectangle.o polygon.o line.o point.o sprite.o turtle.o
+	ar rcs libsprite.a canvas.o rectangle.o polygon.o line.o point.o sprite.o turtle.o
+
+OPTIONS=-I/usr/include/X11 -L/usr/X11R6/lib -lX11  -I`pwd`
+
+OBJS = canvas.o polygon.o line.o point.o sprite.o turtle.o rectangle.o
+
+canvas.o: canvas.cpp canvas.h sprite.h common_def.h turtle.h
+	g++ -g -c canvas.cpp -o canvas.o $(OPTIONS)
+
+polygon.o: polygon.cpp polygon.h sprite.h common_def.h
+	g++ -g -c polygon.cpp -o polygon.o $(OPTIONS)
+
+line.o: line.cpp line.h sprite.h common_def.h
+	g++ -g -c line.cpp -o line.o $(OPTIONS)
+
+rectangle.o: rectangle.cpp rectangle.h sprite.h common_def.h
+	g++ -g -c rectangle.cpp -o rectangle.o $(OPTIONS)
+
+point.o: point.cpp point.h sprite.h common_def.h
+	g++ -g -c point.cpp -o point.o $(OPTIONS)
+
+sprite.o: sprite.h sprite.cpp common_def.h
+	g++ -g -c sprite.cpp -o sprite.o $(OPTIONS)
+
+turtle.o: turtle.h turtle.cpp common_def.h
+	g++ -g -c turtle.cpp -o turtle.o $(OPTIONS)
+
+clean:
+	rm *.o *.a
+
+exe: 2turtles.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o
+	g++ 2turtles.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o $(OPTIONS)
+
+exe2: tt.cpp libsprite.a
+	g++ tt.cpp libsprite.a $(OPTIONS)
+
+exep: tree.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o
+	g++ tree.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o $(OPTIONS)
+
+exet: transformvectors.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o
+	g++ transformvectors.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o $(OPTIONS)
+
+exerect : transformvectors.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o rectangle.o
+	g++ rectmain.cpp canvas.o polygon.o line.o point.o sprite.o turtle.o rectangle.o $(OPTIONS)
+
+exedraw : drawformula.cpp $(OBJS)
+	g++ drawformula.cpp $(OBJS) $(OPTIONS)
+
+text: text.cpp $(OBJS)
+	g++ text.cpp $(OBJS) $(OBJS)

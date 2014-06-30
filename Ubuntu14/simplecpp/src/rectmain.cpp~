@@ -1,0 +1,8 @@
+#include <simplecpp>
+
+main(){
+  initCanvas("Rectangle test");
+  Rectangle r(100,100,50);
+
+  wait(5);
+}

@@ -1,0 +1,48 @@
+#include <simplecpp>
+#include <pose.h>
+#include <polygon.h>
+
+class House : public Composite{
+public:
+  House(double dx, double dy, Composite* owner=NULL)
+  : Composite(dx,dy,owner){
+    float points[3][2]={00,00, 300,100, 200,200};
+    Polygon *p = new Polygon(200,100,points,3,this);
+    Polygon *q = new Polygon(220,100,points,3,this);
+  }
+};
+
+
+int main(){
+  initCanvas("Trtest",0,0,800,800);
+  float points[3][2]={00,00, 300,100, 200,200};
+  Polygon p(200,100,points,3);
+  House h(300.0,300.0);
+  for(int i=0; i<10; i++){
+    h.move(10,10,false);
+    repaint();
+    wait(0.1);
+  }
+
+
+
+
+  getClick();
+  for(int i=0; i<10; i++){
+    p.move(10,10);
+    wait(0.1);
+  }
+  getClick();
+  for(int i=0; i<10; i++){
+    p.rotate(0.1);
+    wait(0.1);
+  }
+  getClick();
+  for(int i=0; i<10; i++){
+    p.rotate(-0.1);
+    wait(0.1);
+  }
+  getClick();
+
+}
+    

@@ -1,0 +1,16 @@
+#ifndef _SPRITE_INCLUDED_
+#define _SPRITE_INCLUDED_
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Sprite{
+ public:
+  vector<Sprite *> parts;
+
+ protected:
+  
+};
+#endif

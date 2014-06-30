@@ -1,0 +1,255 @@
+#include <polygon.h>
+#include <cmath>
+#include <canvas.h>
+
+#define PI 3.141596
+
+Polygon::Polygon():Sprite(){
+  fill_color = COLOR("Black");
+  fill = false;
+  count = 0;
+  vertex = NULL;
+  res_vertex = NULL;
+}
+
+// Constructor
+// Use: Initialise values
+// Precondition: points is 2D array containing 'count' rows. It has two columns which give x and y co-ordinates of each point.
+// Postcondition: Values initialised
+Polygon::Polygon(const float points[][2], int no_of_points, Position polygon_origin, float polygon_orientation)
+  :Sprite(polygon_origin, polygon_orientation, 1, 1){
+  fill_color = COLOR("Black");
+  fill = false;
+  count = no_of_points;
+  vertex = new Position[count];
+  res_vertex = new Position[count];
+
+  // If memory allocation fails
+  if(vertex == NULL || res_vertex == NULL){
+    count = 0;
+    return;
+  }
+
+  for(int iter = 0; iter < count; iter ++){
+    vertex[iter] = Position(points[iter][0], points[iter][1]);
+  }
+
+  // Find res_vertex
+  compute_res_vertex();
+
+  paint();
+}
+
+// Constructor
+// Use: Initialise values
+// Precondition: points is array containing 'count' elements.
+// Postcondition: Values initialised
+Polygon::Polygon(const Position points[], int no_of_points, Position polygon_origin, float polygon_orientation)
+ :Sprite(polygon_origin, polygon_orientation, 1, 1){
+
+  fill_color = COLOR("Black");
+  fill = false;
+  count = no_of_points;
+  vertex = new Position[count];
+  res_vertex = new Position[count];
+
+  // If memory allocation fails
+  if(vertex == NULL || res_vertex == NULL){
+    count = 0;
+    return;
+  }
+
+  for(int iter = 0; iter < count; iter ++){
+    vertex[iter] = points[iter];
+  }
+
+  // Find res_vertex
+  compute_res_vertex();
+
+  paint();
+}
+
+// Use: Destructor
+// Precondition: None
+// Postcondition: Deleted memory allocated for vertex
+Polygon::~Polygon(){
+  if(vertex)
+    delete []vertex;
+  if(res_vertex)
+    delete []res_vertex;
+}
+
+// Use: Draw polygon on screen
+// Precondition: Nothing
+// Postcondition: If visible is true, then draw on screen
+void Polygon::paint(){
+#ifdef DEBUG
+  RectBox rect = boundingBox();
+  //the_canvas.drawRectangle(rect.top_left, rect.bottom_right, White, true);
+
+  std::cerr<<"Point list\n";
+  for(int i = 0; i < count; i ++){
+    std::cerr<<vertex[i].GetXDistance()<<", "<<vertex[i].GetYDistance()<<std::endl;
+  }
+#endif
+
+  if(visible && vertex){
+    // Find final co-ordinates
+    XPoint xpt_vertex[count];
+
+    compute_res_vertex();
+
+    for(int iter = 0; iter < count; iter ++){      
+      xpt_vertex[iter].x = int(res_vertex[iter].GetXDistance());
+      xpt_vertex[iter].y = int(res_vertex[iter].GetYDistance());
+    }
+
+    drawPolygon(xpt_vertex, count, fill_color, fill);
+
+#ifdef DEBUG
+    std::cerr<<"Res Point list\n";
+    for(int i = 0; i < count; i ++){
+      std::cerr<<res_vertex[i].x<<", "<<res_vertex[i].y<<std::endl;
+    }
+#endif
+  }
+}
+
+
+// Use: Gives rectangle bounding polygon
+// Precondition: Nothing
+// Postcondition: RectBox contains bounding box
+RectBox Polygon::boundingBox(){
+  RectBox rect;
+
+  // If vertex == NULL
+  if(!vertex){
+    rect.top_left = Position(0,0);
+    rect.bottom_right = Position(0,0);
+
+    return rect;
+  }   
+  // Find final co-ordinates  
+  
+  if(res_vertex == NULL){
+    rect.top_left = Position(0,0);
+    rect.bottom_right = Position(0,0);
+
+    return rect;
+  }
+
+  // Find resultant vertices
+  compute_res_vertex();
+
+  // Find bounding box
+  float min_x, max_x;
+  float min_y, max_y;
+
+  min_x = max_x = res_vertex[0].GetXDistance();
+  min_y = max_y = res_vertex[0].GetYDistance();
+
+  for(int iter = 0; iter < count; iter ++){
+    float curr_x = res_vertex[iter].GetXDistance();
+    float curr_y = res_vertex[iter].GetYDistance();
+
+    if(min_x > curr_x)
+      min_x = curr_x;
+    if(max_x < curr_x)
+      max_x = curr_x;
+    if(min_y > curr_y)
+      min_y = curr_y;
+    if(max_y < curr_y)
+      max_y = curr_y;
+  }
+
+  rect.top_left = Position(min_x, min_y);
+  rect.bottom_right = Position(max_x, max_y);  
+
+  return rect;
+}
+
+// Use: Set fill color
+// Precondition: None
+// Postcondition: fill_color modified
+void Polygon::setFillColor(Color fill_clr){
+  fill_color = fill_clr;
+  repaint(boundingBox());
+}
+
+// Use: Get fill color
+// Precondition: Nothing
+// Postcondition: fill_color returned
+Color Polygon::getFillColor(){
+  return fill_color;
+}
+
+// Use: Set fill
+// Precondition: Nothing
+// Postcondition: value == True means show fill
+void Polygon::setFill(bool value){
+  fill = value;
+  repaint(boundingBox());
+}
+
+// Use: Get fill setting
+// Precondition: Nothing
+// Postcondition: Read fill
+bool Polygon::getFill(){
+  return fill;
+}
+
+void Polygon::operator= (Polygon p){
+  // Try to get memory first
+  Position *new_mem = new Position[p.count];
+  Position *new_res_mem = new Position[p.count];
+
+  // No memory
+  if(!new_mem)
+    return;
+
+  // Free old memory
+  if(vertex)
+    delete vertex;
+
+  if(res_vertex)
+    delete res_vertex;
+
+  count = p.count;
+  fill_color = p.fill_color;
+  fill = p.fill;
+  vertex = new_mem;
+  res_vertex = new_res_mem;
+
+  // Sprite's attributes
+  origin = p.origin;
+  orientation = p.orientation;  
+  xscale = p.xscale;
+  yscale = p.yscale;
+  visible = p.visible;
+  z_index = p.z_index;
+
+  // Copy all vertices
+  for(int i = 0; i < count; i ++)
+    vertex[i] = p.vertex[i];
+
+  compute_res_vertex();
+}
+
+
+int Polygon::getVertexCount(){
+  return count;
+}
+
+Position *Polygon::getVertices(){
+  return res_vertex;
+}
+
+void Polygon::compute_res_vertex(){
+  for(int iter = 0; iter < count; iter ++){
+    float curr_x = vertex[iter].GetXDistance();
+    float curr_y = vertex[iter].GetYDistance();
+
+    res_vertex[iter] = Position(curr_x * xscale * cos(orientation*PI/180.0) - curr_y * yscale * sin(orientation*PI/180.0) + origin.GetXDistance(),
+				curr_x * xscale* sin(orientation*PI/180.0) + curr_y * yscale * cos(orientation*PI/180.0) + origin.GetYDistance());
+  }
+}

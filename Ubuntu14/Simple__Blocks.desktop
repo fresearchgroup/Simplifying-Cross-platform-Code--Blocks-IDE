@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/share/simpleblocks/run.sh
+Name=SimpleBlocks
+Comment=Made by MATR
+Icon=/usr/share/simpleblocks/share/codeblocks/app.png
