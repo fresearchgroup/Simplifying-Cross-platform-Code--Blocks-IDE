@@ -1,0 +1,26 @@
+default: canvas.o polygon.o line.o point.o sprite.o
+	ar rcs libsprite.a canvas.o polygon.o line.o point.o sprite.o
+
+OPTIONS=-I/usr/include/X11 -L/usr/X11R6/lib -lX11  -I`pwd`
+
+
+canvas.o: canvas.cpp canvas.h sprite.h
+	g++ -g -c canvas.cpp -o canvas.o $(OPTIONS)
+
+polygon.o: polygon.cpp polygon.h sprite.h
+	g++ -g -c polygon.cpp -o polygon.o $(OPTIONS)
+
+line.o: line.cpp line.h sprite.h
+	g++ -g -c line.cpp -o line.o $(OPTIONS)
+
+point.o: point.cpp point.h sprite.h
+	g++ -g -c point.cpp -o point.o $(OPTIONS)
+
+sprite.o: sprite.h sprite.cpp
+	g++ -g -c sprite.cpp -o sprite.o $(OPTIONS)
+
+clean:
+	rm *.o *.a
+
+exe: main.cpp canvas.o polygon.o line.o point.o sprite.o
+	g++ main.cpp canvas.o polygon.o line.o point.o sprite.o $(OPTIONS)

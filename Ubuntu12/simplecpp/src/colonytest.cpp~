@@ -1,0 +1,59 @@
+#include <simplecpp>
+#include <pose.h>
+#include <polygon.h>
+
+class House : public Composite{
+public:
+  Polygon* roof;
+  Polygon* body;
+  Polygon* window1;
+  Polygon* window2;
+  House(double dx, double dy, Composite* owner=NULL)
+  : Composite(dx,dy,owner){
+    double roofv[4][2]={{-100,00}, {0,100}, {100,0}, {-100,0}};
+    roof = new Polygon(0,200,roofv,4,this);
+    roof->setColor(COLOR("red"));
+    double bodyv[5][2]={{-100,00}, {-100,200}, {100,200}, {100,0}, {-100,0}};
+    body = new Polygon(0,0,bodyv,5,this);
+    double windowv[5][2]={{-20,-25}, {-20,25}, {20,25}, {20,-25}, {-20,-25}};
+    window1 = new Polygon(-25,75,windowv,5,this);
+    window2 = new Polygon(25,75,windowv,5,this);
+  }
+};
+
+class Colony : public Composite{
+public:
+  House* h1;
+  House* h2;
+  Colony(double x, double y, Composite* owner = NULL)
+    : Composite(x,y,owner){
+    h1 = new House(0,0,this);
+    h1->rotate(PI);
+    h2 = new House(300,0,this);
+    h2->rotate(PI);
+    h2->scale(0.8);
+  }
+};
+
+int main(){
+  initCanvas("Trtest",0,0,800,800);
+  Colony c(300,300);
+  c.imprint();
+  getClick();
+  for(int i=0; i<5; i++){
+    c.rotate(PI/10);
+    wait(0.1);
+  }
+  getClick();
+
+  for(int i=0; i<5; i++){
+    c.h2->window1->rotate(PI/10);
+    wait(0.1);
+  }
+
+  getClick();
+
+}
+
+
+    

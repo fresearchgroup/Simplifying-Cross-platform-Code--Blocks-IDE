@@ -1,0 +1,37 @@
+#ifndef _CANVAS_INCLUDED
+#define _CANVAS_INCLUDED
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <set>
+#include <common_def.h>
+#include <sprite.h>
+
+int initCanvas(const char window_title[]);
+void closeCanvas();
+
+void addSprite(Sprite *t);
+void removeSprite(Sprite *t);
+
+void drawLine(XPoint start, XPoint end, Color line_color, unsigned int line_width=0, int line_style=LineSolid, int cap_style=CapButt, int join_style=JoinMiter, int function=GXcopy);
+
+void drawPoint(XPoint point, Color point_color, int function=GXcopy);
+
+void drawCircle(XPoint centre, int radius, Color fill_color, bool fill=true, unsigned int line_width=0, int line_style=LineSolid, int cap_style=CapButt, int join_style=JoinMiter, int function=GXcopy);
+
+void drawEllipse(XPoint centre, int width, int height, Color fill_color, bool fill=true, unsigned int line_width=0, int line_style=LineSolid, int cap_style=CapButt, int join_style=JoinMiter, int function=GXcopy);
+
+void drawPolygon(XPoint *points, int npoints, Color fill_color, bool fill=true, unsigned int line_width=0, int line_style=LineSolid, int cap_style=CapButt, int join_style=JoinMiter, int fill_rule=WindingRule, int function=GXcopy);
+
+void drawText(XPoint position, const char *text, Color clr);
+
+Color COLOR(const char *color_string);
+Color COLOR(unsigned short red, unsigned short green, unsigned short blue);
+
+void repaint(RectBox rect);
+void repaint();
+
+void nextEvent(XEvent *event);
+bool checkEvent(XEvent *event);
+void spriteStatus();
+#endif

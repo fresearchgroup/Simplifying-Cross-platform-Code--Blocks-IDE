@@ -1,0 +1,58 @@
+#ifndef _SPRITE_INCLUDED_
+#define _SPRITE_INCLUDED_
+
+//#define DEBUG
+#include <common_def.h>
+
+class Sprite
+{
+ public:
+  static int max_z_index;
+
+ protected:
+  Position origin;
+  float orientation;  
+  float xscale;
+  float yscale;
+  bool visible;
+  int z_index;
+
+ public:
+  Sprite();
+  Sprite(Position origin, float orientation, float xscale, float yscale, bool visible=true);
+  ~Sprite();
+
+  virtual void paint() = 0;
+  virtual void show();
+  virtual void hide();
+  virtual RectBox boundingBox() = 0;
+  virtual void rotate(float angle);
+  virtual void scale(float factor);
+  virtual void scale(float new_xfactor, float new_yfactor);
+  virtual void move(float xshift, float yshift);
+  virtual void setOrigin(Position new_origin);
+  virtual void setOrientation(float new_orientation);
+  virtual void setXScale(float new_xscale);
+  virtual void setYScale(float new_yscale);
+  virtual Position getOrigin() const;
+  virtual float getOrientation() const;
+  virtual float getXScale() const;
+  virtual float getYScale() const;
+  virtual void setZIndex(int new_z_index);
+  virtual int getZIndex() const;
+  
+  static float toStandardAngle(float angle){
+    // Given any angle, convert it to standard angle
+    if(angle <= 180.0 && angle > -180.0)
+      return angle;
+
+    int no_of_rotations = int(angle / 360.0);
+    angle -= no_of_rotations * 360.0;
+
+    if(angle > 180.0)
+      angle -= 360.0;
+
+    return angle;
+  }
+};
+#endif

@@ -1,0 +1,47 @@
+#include <iostream>
+using namespace std;
+
+template <class T>
+class array2d{
+  T *v;
+  int nRows,nCols;
+public:
+  array2d();
+  array2d(int nrows, int ncols);
+  int rows();
+  int columns();
+  T & operator()(int i, int j);
+  ~array2d();
+};
+
+#ifndef ARRAY2D
+#define ARRAY2D
+
+template <class T>
+array2d<T>::array2d(){v=NULL; nRows = nCols = 0;}
+
+template <class T>
+array2d<T>::array2d(int nrows, int ncols){
+  nRows = nrows;
+  nCols = ncols;
+  v = new T[nRows*nCols];
+}
+
+template <class T>
+array2d<T>::~array2d(){delete[] v;}
+
+template <class T>
+int array2d<T>::rows(){return nRows;}
+
+template <class T>
+int array2d<T>::columns(){return nCols;}
+
+template <class T>
+T & array2d<T>::operator()(int i, int j){
+  if(i >= nRows || i < 0 || j >= nCols || j < 0){
+    cout << "Out of bounds indices ("<< i <<", "<<j<<
+      ").  Max allowed ("<< nRows-1<<", "<<nCols-1<<").\n";
+  }
+  return v[i*nCols+j];
+}
+#endif

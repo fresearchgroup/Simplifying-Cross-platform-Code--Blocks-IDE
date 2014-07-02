@@ -1,0 +1,26 @@
+#include <graphicsim.h>
+#include <cmath>
+
+Turtle::Turtle(Position origin, float orientation, 
+	       float xscale, float yscale, bool visible)
+  : Sprite(origin, orientation,  xscale,  yscale, visible)
+{
+  init();
+}
+
+Turtle::Turtle()
+  : Sprite(Position(300,300), 0,  1,  1, true)
+{
+  init();
+}
+
+void Turtle::init(){
+
+  float pts_body[3][2] = {{0, 15}, {20, 0}, {0, -15}};
+  body = new Polygon(pts_body, 3, origin, orientation);
+
+  body->setFillColor(COLOR("red"));
+  body->setFill(true); 
+  addPart(body);
+  penDown();
+}

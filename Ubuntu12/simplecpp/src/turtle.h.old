@@ -1,0 +1,22 @@
+#ifndef _TURTLE_INCLUDED_
+#define _TURTLE_INCLUDED_
+
+#include <common_def.h>
+#include <sprite.h>
+#include <vector>
+
+using namespace std;
+
+class Turtle : public Sprite{
+public:
+  Polygon *body;
+
+public:
+  Turtle();
+  Turtle(Position origin, float orientation=0, 
+	 float xscale=1, float yscale=1, bool visible=true);
+  void init();
+};
+
+
+#endif

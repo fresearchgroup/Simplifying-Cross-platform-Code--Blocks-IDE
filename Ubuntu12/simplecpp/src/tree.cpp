@@ -1,0 +1,38 @@
+#include <simplecpp>
+
+void tree(int height, float length, float angle, float shrinkage)
+  // precondition: turtle is at root, pointing up.
+  // post condition: same
+{
+  //  cout << height << ") " << length <<", "<< angle << angle/2 << endl;
+  if(height == 0) return;
+  left(angle/2);
+  forward(length);
+  left(-angle/2);
+  tree(height-1, length*shrinkage, angle*shrinkage, shrinkage);
+  left(angle/2);
+  forward(-length);
+  left(-angle);
+  forward(length);
+  left(angle/2);
+  tree(height-1,length*shrinkage, angle*shrinkage, shrinkage);
+  left(-angle/2);
+  forward(-length);
+  left(angle/2);
+}
+
+main(int argc, char* argv[]){
+
+  turtlesim(10,10,500,500);
+  usleep(1000000);
+  left(90);
+  penDown(false);
+  forward(-200);
+  penDown(true);
+  tree(3,60.0,90.0,0.7);
+
+  usleep(1000000);
+  closeCanvas();
+
+  return 0;
+}

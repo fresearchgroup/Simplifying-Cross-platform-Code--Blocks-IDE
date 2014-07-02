@@ -1,0 +1,143 @@
+#include <sprite.h>
+#include <canvas.h>
+
+extern int Sprite::max_z_index;
+
+Sprite::Sprite(){
+  origin = Position(0, 0);
+  orientation = 0;
+  xscale = 1;
+  yscale = 1;
+  visible = true;
+  z_index = ++ max_z_index;
+
+  // Register to canvas
+  addSprite(this);
+}
+
+Sprite::Sprite(Position new_origin, float new_orientation, float new_xscale, float new_yscale, bool new_visible){
+  origin = new_origin;
+  orientation = new_orientation;
+  xscale = new_xscale;
+  yscale = new_yscale;
+  visible = new_visible;
+  z_index = ++ max_z_index;
+
+  // Register to canvas
+  addSprite(this);
+}
+
+Sprite::~Sprite(){
+  removeSprite(this);
+}
+
+void Sprite::show(){
+  visible = true;
+  paint();
+}
+
+void Sprite::hide(){
+  visible = false;
+  RectBox rect = boundingBox();
+  repaint(rect);
+}
+
+ void Sprite::rotate(float angle){
+  RectBox rect = boundingBox();
+
+  orientation = toStandardAngle(orientation + angle);
+    
+  repaint(rect);  
+  paint();
+}
+
+void Sprite::scale(float factor){
+  if(factor <= 0)
+    return;
+
+  RectBox rect = boundingBox();
+  xscale *= factor;
+  yscale *= factor;
+
+  repaint(rect);
+  paint();
+}
+
+void Sprite::scale(float new_xfactor, float new_yfactor){
+  if(new_xfactor <= 0 || new_yfactor <= 0)
+    return;
+
+  RectBox rect = boundingBox();
+  xscale *= new_xfactor;
+  yscale *= new_yfactor;
+
+  repaint(rect);
+  paint();
+}
+
+void Sprite::move(float xshift, float yshift){
+  if(xshift != 0 || yshift != 0){
+    RectBox rect = boundingBox();
+
+    origin = Position(origin.GetXDistance() + xshift, origin.GetYDistance() + yshift);
+
+    repaint(rect);
+    paint();
+  }
+}
+
+void Sprite::setOrigin(Position new_origin){
+  RectBox rect = boundingBox();
+
+  origin = new_origin;
+  repaint(rect);
+  paint();
+}
+
+void Sprite::setOrientation(float new_orientation){
+  RectBox rect = boundingBox();
+
+  orientation = new_orientation;
+  repaint(rect);
+  paint();
+}
+
+ void Sprite::setXScale(float new_xscale){
+  RectBox rect = boundingBox();
+
+  xscale = new_xscale;
+  repaint(rect);
+  paint();
+}
+
+void Sprite::setYScale(float new_yscale){
+  RectBox rect = boundingBox();
+
+  yscale = new_yscale;
+  repaint(rect);
+  paint();
+}
+
+Position Sprite::getOrigin() const{
+  return origin;
+}
+
+float Sprite::getOrientation() const{
+  return orientation;
+}
+
+float Sprite::getXScale() const{
+  return xscale;
+}
+
+float Sprite::getYScale() const{
+  return yscale;
+}
+
+void Sprite::setZIndex(int new_z_index){
+  z_index = new_z_index;
+}
+
+int Sprite::getZIndex() const{
+  return z_index;
+}

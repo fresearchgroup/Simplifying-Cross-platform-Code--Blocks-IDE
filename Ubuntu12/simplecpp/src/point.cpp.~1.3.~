@@ -1,0 +1,143 @@
+#include <point.h>
+#include <cmath>
+#include <canvas.h>
+#include <malloc.h>
+
+#define PI 3.141596
+
+
+Point::Point():Sprite(){
+  center = Position(0, 0);
+  fill_color = COLOR("Black");
+  fill = false;
+  radius = 0.01;
+
+  // paint yourself
+  paint();
+}
+
+// Constructor
+// Use: Initialise values
+// Precondition: None.
+// Postcondition: Values initialised
+Point::Point(const float in_radius, const Position pt_center, Position point_origin):Sprite(point_origin, 0, 1, 1){
+  fill_color = COLOR("Black");
+  fill = false;
+  center = pt_center;
+
+  if(in_radius > 0)
+    radius = in_radius;
+  else
+    radius = 0.01;
+
+  // Paint yourself
+  paint();
+}
+
+
+// Use: Destructor
+// Precondition: None
+// Postcondition: None
+Point::~Point(){
+  // Do nothing
+}
+
+// Use: Draw point on screen
+// Precondition: Nothing
+// Postcondition: If visible is true, then draw on screen
+void Point::paint(){
+#ifdef DEBUG
+  //debug
+  RectBox rect = boundingBox();
+  //the_canvas.drawRectangle(rect.top_left, rect.bottom_right, White, true);
+#endif
+
+   if(visible){
+     float curr_x = center.GetXDistance();
+     float curr_y = center.GetYDistance();
+
+     XPoint res_center;
+     res_center.x = int(curr_x * xscale * cos(orientation*PI/180.0) - 
+		    curr_y * yscale * sin(orientation*PI/180.0) + 
+			origin.GetXDistance());
+     res_center.y = int(curr_x * xscale * sin(orientation*PI/180.0) + 
+		    curr_y * yscale * cos(orientation*PI/180.0) + 
+		    origin.GetYDistance());
+    // Draw a circle
+     drawEllipse(res_center, int(radius * xscale), int(radius * yscale), fill_color, fill);
+  }
+}
+
+// Use: Gives rectangle bounding point
+// Precondition: Nothing
+// Postcondition: RectBox contains bounding box
+RectBox Point::boundingBox(){
+  RectBox rect;
+
+  // Find final co-ordinates
+     float curr_x = center.GetXDistance();
+     float curr_y = center.GetYDistance();
+
+     Position res_center(curr_x * xscale * cos(orientation*PI/180.0) - 
+		    curr_y * yscale * sin(orientation*PI/180.0) + 
+		    origin.GetXDistance(),
+		    curr_x * xscale * sin(orientation*PI/180.0) + 
+		    curr_y * yscale * cos(orientation*PI/180.0) + 
+		    origin.GetYDistance());
+
+  rect.top_left = Position(res_center.GetXDistance() - radius * xscale, res_center.GetYDistance() - radius * yscale);
+  rect.bottom_right = Position(res_center.GetXDistance() + radius * xscale, res_center.GetYDistance() + radius * yscale);
+
+  return rect;
+}
+
+
+// Use: Set fill color
+// Precondition: None
+// Postcondition: fill_color modified
+void Point::setFillColor(Color fill_clr){
+  fill_color = fill_clr;
+  repaint(boundingBox());
+}
+
+// Use: Get fill color
+// Precondition: Nothing
+// Postcondition: fill_color returned
+Color Point::getFillColor(){
+  return fill_color;
+}
+
+// Use: Set fill
+// Precondition: Nothing
+// Postcondition: value == True means show fill
+void Point::setFill(bool value){
+  fill = value;
+  repaint(boundingBox());
+}
+
+// Use: Get fill setting
+// Precondition: Nothing
+// Postcondition: Read fill
+bool Point::getFill(){
+  return fill;
+}
+
+float Point::getXRadius(){
+  return radius * xscale;
+}
+
+float Point::getYRadius(){
+  return radius * yscale;
+}
+
+Position Point::getCenter(){
+  float curr_x = center.GetXDistance();
+  float curr_y = center.GetYDistance();
+
+  return Position(curr_x * xscale * cos(orientation*PI/180.0) - 
+		    curr_y * yscale * sin(orientation*PI/180.0) + 
+		    origin.GetXDistance(),
+		    curr_x * xscale * sin(orientation*PI/180.0) + 
+		    curr_y * yscale * cos(orientation*PI/180.0) + 
+		    origin.GetYDistance());
+}
